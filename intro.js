@@ -1,8 +1,5 @@
-const go = (...callbacks) => {
-  return callbacks.reduce(
-    (value, callback, index) => (index > 0 ? callback(value) : callback),
-    undefined
-  );
+const go = (init, ...callbacks) => {
+  return callbacks.reduce((acc, callback) => callback(acc), init);
 };
 
 const queryStr = (obj) => go(obj, Object.entries);
