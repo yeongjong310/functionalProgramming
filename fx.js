@@ -69,9 +69,18 @@ const L = {
       if (f(el)) yield el;
     }
   },
+  entries: function* (iter) {
+    for (let key in iter) {
+      yield [(key, iter[key])];
+    }
+  },
 };
 
-const take = (l, iter) => {
+const join = curry((sep, iter) => {
+  reduce((a, b) => `a${sep}b`, iter);
+});
+
+const take = curry((l, iter) => {
   const result = [];
 
   for (const el of iter) {
@@ -80,7 +89,16 @@ const take = (l, iter) => {
   }
 
   return result;
-};
+});
+
+const find = curry((f, iter) =>
+  go(
+    iter,
+    L.filter((a) => f(a)),
+    take(1),
+    ([v]) => v
+  )
+);
 
 function test(name, time, f) {
   console.time(name);
