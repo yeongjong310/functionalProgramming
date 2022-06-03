@@ -59,6 +59,16 @@ const L = {
       yield ++i;
     }
   },
+  map: function* (f, iter) {
+    for (const el of iter) {
+      yield f(el);
+    }
+  },
+  filter: function* (f, iter) {
+    for (const el of iter) {
+      if (f(el)) yield el;
+    }
+  },
 };
 
 const take = (l, iter) => {
