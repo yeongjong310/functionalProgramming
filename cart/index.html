@@ -25,10 +25,7 @@
 
     const totalQuantity = pipe(sum((p) => p.quantity));
 
-    const totalPrice = pipe(
-      map((p) => p.quantity * p.price),
-      reduce(add)
-    );
+    const totalPrice = pipe(sum((p) => p.quantity * p.price));
 
     document.querySelector("#cart").innerHTML = `
     <table>
@@ -40,7 +37,7 @@
       </tr>
       ${go(
         products,
-        map(
+        sum(
           (product) => `
             <tr>
               <th>${product.name}</th>
@@ -49,8 +46,7 @@
               <th>30000</th>
             </tr>
           `
-        ),
-        reduce(add)
+        )
       )}
       <tr>
         <td colspan="2">합계</td>
