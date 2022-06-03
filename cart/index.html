@@ -12,11 +12,11 @@
   </body>
   <script>
     const products = [
-      { name: "반팔티", price: 15000, quantity: 1 },
-      { name: "긴팔티", price: 20000, quantity: 2 },
-      { name: "핸드폰케이스", price: 15000, quantity: 3 },
-      { name: "후드티", price: 30000, quantity: 4 },
-      { name: "바지", price: 25000, quantity: 5 },
+      { name: "반팔티", price: 15000, quantity: 1, isSelected: true },
+      { name: "긴팔티", price: 20000, quantity: 2, isSelected: false },
+      { name: "핸드폰케이스", price: 15000, quantity: 3, isSelected: true },
+      { name: "후드티", price: 30000, quantity: 4, isSelected: false },
+      { name: "바지", price: 25000, quantity: 5, isSelected: false },
     ];
 
     const add = (a, b) => a + b;
@@ -30,6 +30,7 @@
     document.querySelector("#cart").innerHTML = `
     <table>
       <tr>
+        <th></th>
         <th>상품 이름</th>
         <th>가격</th>
         <th>수량</th>
@@ -40,18 +41,26 @@
         sum(
           (product) => `
             <tr>
+              <th><input type="checkbox" ${
+                product.isSelected ? "checked" : ""
+              }></th>
               <th>${product.name}</th>
               <th>${product.price}</th>
               <th><input type="number" value="${product.quantity}"/th>
-              <th>30000</th>
+              <th>${product.quantity * product.price}</th>
             </tr>
           `
         )
       )}
       <tr>
+        <td></td>
         <td colspan="2">합계</td>
-        <td>${totalQuantity(products)}</td>
-        <td>${totalPrice(products)}</td>
+        <td>${totalQuantity(
+          filter((product) => product.isSelected, products)
+        )}</td>
+        <td>${totalPrice(
+          filter((product) => product.isSelected, products)
+        )}</td>
       </tr>
     </table>
     `;
