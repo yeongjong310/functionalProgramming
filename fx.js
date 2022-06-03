@@ -48,3 +48,17 @@ const reduce = curry((f, init, arr) => {
 
   return acc;
 });
+
+const range = (l) => Array.from({ length: l }, (v, index) => index);
+
+const L = {
+  range: function* (l) {
+    let i = -1;
+
+    while (i < l) {
+      yield ++i;
+    }
+  },
+};
+
+console.log(...L.range(4));
