@@ -32,8 +32,15 @@ const map = curry((f, arr) => {
   return result;
 });
 
-const reduce = curry((f, arr, init = 0) => {
-  let acc = init;
+const reduce = curry((f, init, arr) => {
+  let acc;
+
+  if (!arr) {
+    arr = init[Symbol.iterator]();
+    acc = arr.next().value;
+  } else {
+    acc = init;
+  }
 
   for (const el of arr) {
     acc = f(acc, el);
