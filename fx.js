@@ -22,6 +22,9 @@ const take = curry((l, iter) => {
 
   return result;
 });
+
+const takeAll = take(Infinity);
+
 const L = {
   range: function* (l) {
     let i = -1;
@@ -43,16 +46,22 @@ const L = {
       if (f(el)) yield el;
     }
   }),
-  entries: curry(function* (iter) {
+  entries: function* (iter) {
     for (let key in iter) {
       yield [(key, iter[key])];
     }
-  }),
+  },
+  flatten: function* (iter) {
+    for (const el of iter) {
+      if (el && el[Symbol.iterator]) for (const innerEl of el) yield innerEl;
+      else yield el;
+    }
+  },
 };
 
-const filter = curry(pipe(L.filter, take(Infinity)));
+const filter = curry(pipe(L.filter, takeAll));
 
-const map = curry(pipe(L.map, take(Infinity)));
+const map = curry(pipe(L.map, takeAll));
 
 const reduce = curry((f, init, iter) => {
   let acc;
@@ -70,6 +79,8 @@ const reduce = curry((f, init, iter) => {
 
   return acc;
 });
+
+const flatten = pipe(L.flatten, takeAll);
 
 const range = (l) => Array.from({ length: l }, (v, index) => index);
 
