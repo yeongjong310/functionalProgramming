@@ -24,9 +24,12 @@ const filter = curry((f, iter) => {
 
 const map = curry((f, iter) => {
   const result = [];
+  iter = iter[Symbol.iterator]();
 
-  for (const el of iter) {
-    result.push(f(el));
+  let cur;
+
+  while (!(cur = iter.next()).done) {
+    result.push(f(cur.value));
   }
 
   return result;
@@ -60,8 +63,11 @@ const L = {
     }
   },
   map: function* (f, iter) {
-    for (const el of iter) {
-      yield f(el);
+    let cur;
+    iter = iter[Symbol.iterator]();
+
+    while (!(cur = iter.next()).done) {
+      yield f(cur.value);
     }
   },
   filter: function* (f, iter) {
