@@ -12,19 +12,9 @@ const curry =
   (arg, ...args) =>
     args.length > 0 ? f(arg, ...args) : (...args) => f(arg, ...args);
 
-const filter = curry((f, iter) => {
-  const result = [];
+const filter = curry((f, iter) => go(iter, L.filter(f), take(Infinity)));
 
-  for (const el of iter) {
-    if (f(el)) result.push(el);
-  }
-
-  return result;
-});
-
-const map = curry((f, iter) => {
-  return go(iter, L.map(f), take(Infinity));
-});
+const map = curry((f, iter) => go(iter, L.map(f), take(Infinity)));
 
 const reduce = curry((f, init, iter) => {
   let acc;
