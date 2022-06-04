@@ -85,6 +85,8 @@ const reduce = curry((f, init, iter) => {
 
 const flatten = pipe(L.flatten(), takeAll);
 
+const flatMap = pipe(L.flatMap, takeAll);
+
 const range = (l) => Array.from({ length: l }, (v, index) => index);
 
 const join = curry((sep, iter) => {
@@ -106,7 +108,7 @@ function test(name, time, f) {
   console.timeEnd(name);
 }
 
-// console.log(L.flatMap((a) => a ** 2, [1, 2, [3]]));
+console.log(...L.flatMap((a) => a ** 2, [1, 2, [3]]));
 
 // test("range", 10, () => reduce((a, b) => a + b), range(1000000));
 // test("L.range", 10, () => reduce((a, b) => a + b), L.range(1000000)); // L.range가 좀 더 빠르다.
