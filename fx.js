@@ -23,16 +23,7 @@ const filter = curry((f, iter) => {
 });
 
 const map = curry((f, iter) => {
-  const result = [];
-  iter = iter[Symbol.iterator]();
-
-  let cur;
-
-  while (!(cur = iter.next()).done) {
-    result.push(f(cur.value));
-  }
-
-  return result;
+  return go(iter, L.map(f), take(Infinity));
 });
 
 const reduce = curry((f, init, iter) => {
@@ -62,24 +53,24 @@ const L = {
       yield ++i;
     }
   },
-  map: function* (f, iter) {
+  map: curry(function* (f, iter) {
     let cur;
     iter = iter[Symbol.iterator]();
 
     while (!(cur = iter.next()).done) {
       yield f(cur.value);
     }
-  },
-  filter: function* (f, iter) {
+  }),
+  filter: curry(function* (f, iter) {
     for (const el of iter) {
       if (f(el)) yield el;
     }
-  },
-  entries: function* (iter) {
+  }),
+  entries: curry(function* (iter) {
     for (let key in iter) {
       yield [(key, iter[key])];
     }
-  },
+  }),
 };
 
 const join = curry((sep, iter) => {
