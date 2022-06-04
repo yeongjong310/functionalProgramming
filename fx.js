@@ -25,40 +25,42 @@ const take = curry((l, iter) => {
 
 const takeAll = take(Infinity);
 
-const L = {
-  range: function* (l) {
-    let i = -1;
+const L = {};
 
-    while (i < l) {
-      yield ++i;
-    }
-  },
-  map: curry(function* (f, iter) {
-    let cur;
-    iter = iter[Symbol.iterator]();
+L.range = function* (l) {
+  let i = -1;
 
-    while (!(cur = iter.next()).done) {
-      yield f(cur.value);
-    }
-  }),
-  filter: curry(function* (f, iter) {
-    for (const el of iter) {
-      if (f(el)) yield el;
-    }
-  }),
-  entries: function* (iter) {
-    for (let key in iter) {
-      yield [(key, iter[key])];
-    }
-  },
-  flatten: curry(function* f(count = 1, iter) {
-    for (const el of iter) {
-      if (count > 0 && el && el[Symbol.iterator]) {
-        yield* f(--count, el);
-      } else yield el;
-    }
-  }),
+  while (i < l) {
+    yield ++i;
+  }
 };
+
+L.map = curry(function* (f, iter) {
+  let cur;
+  iter = iter[Symbol.iterator]();
+
+  while (!(cur = iter.next()).done) {
+    yield f(cur.value);
+  }
+});
+L.filter = curry(function* (f, iter) {
+  for (const el of iter) {
+    if (f(el)) yield el;
+  }
+});
+L.entries = function* (iter) {
+  for (let key in iter) {
+    yield [(key, iter[key])];
+  }
+};
+L.flatten = curry(function* f(count = 1, iter) {
+  for (const el of iter) {
+    if (count > 0 && el && el[Symbol.iterator]) {
+      yield* f(--count, el);
+    } else yield el;
+  }
+});
+L.flatMap = pipe(L.map, L.flatten());
 
 const filter = curry(pipe(L.filter, takeAll));
 
@@ -81,7 +83,7 @@ const reduce = curry((f, init, iter) => {
   return acc;
 });
 
-const flatten = pipe(L.flatten, takeAll);
+const flatten = pipe(L.flatten(), takeAll);
 
 const range = (l) => Array.from({ length: l }, (v, index) => index);
 
@@ -103,6 +105,8 @@ function test(name, time, f) {
   while (time--) f();
   console.timeEnd(name);
 }
+
+// console.log(L.flatMap((a) => a ** 2, [1, 2, [3]]));
 
 // test("range", 10, () => reduce((a, b) => a + b), range(1000000));
 // test("L.range", 10, () => reduce((a, b) => a + b), L.range(1000000)); // L.range가 좀 더 빠르다.
