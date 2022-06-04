@@ -12,29 +12,16 @@ const curry =
   (arg, ...args) =>
     args.length > 0 ? f(arg, ...args) : (...args) => f(arg, ...args);
 
-const filter = curry((f, iter) => go(iter, L.filter(f), take(Infinity)));
-
-const map = curry((f, iter) => go(iter, L.map(f), take(Infinity)));
-
-const reduce = curry((f, init, iter) => {
-  let acc;
-
-  if (!iter) {
-    iter = init[Symbol.iterator]();
-    acc = iter.next().value;
-  } else {
-    acc = init;
-  }
+const take = curry((l, iter) => {
+  const result = [];
 
   for (const el of iter) {
-    acc = f(acc, el);
+    result.push(el);
+    if (result.length === l) break;
   }
 
-  return acc;
+  return result;
 });
-
-const range = (l) => Array.from({ length: l }, (v, index) => index);
-
 const L = {
   range: function* (l) {
     let i = -1;
@@ -63,19 +50,31 @@ const L = {
   }),
 };
 
-const join = curry((sep, iter) => {
-  reduce((a, b) => `a${sep}b`, iter);
-});
+const filter = curry(pipe(L.filter, take(Infinity)));
 
-const take = curry((l, iter) => {
-  const result = [];
+const map = curry(pipe(L.map, take(Infinity)));
 
-  for (const el of iter) {
-    result.push(el);
-    if (result.length === l) break;
+const reduce = curry((f, init, iter) => {
+  let acc;
+
+  if (!iter) {
+    iter = init[Symbol.iterator]();
+    acc = iter.next().value;
+  } else {
+    acc = init;
   }
 
-  return result;
+  for (const el of iter) {
+    acc = f(acc, el);
+  }
+
+  return acc;
+});
+
+const range = (l) => Array.from({ length: l }, (v, index) => index);
+
+const join = curry((sep, iter) => {
+  reduce((a, b) => `a${sep}b`, iter);
 });
 
 const find = curry((f, iter) =>
