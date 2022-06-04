@@ -51,12 +51,13 @@ const L = {
       yield [(key, iter[key])];
     }
   },
-  flatten: function* (iter) {
+  flatten: curry(function* f(count = 1, iter) {
     for (const el of iter) {
-      if (el && el[Symbol.iterator]) for (const innerEl of el) yield innerEl;
-      else yield el;
+      if (count > 0 && el && el[Symbol.iterator]) {
+        yield* f(--count, el);
+      } else yield el;
     }
-  },
+  }),
 };
 
 const filter = curry(pipe(L.filter, takeAll));
