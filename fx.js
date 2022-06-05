@@ -1,5 +1,5 @@
-const go = (init, ...callbacks) => {
-  return callbacks.reduce((acc, callback) => callback(acc), init);
+const go = (...callbacks) => {
+  return reduce((acc, callback) => callback(acc), callbacks);
 };
 
 const pipe =
@@ -115,3 +115,5 @@ console.log(...L.flatMap((a) => a ** 2, [1, 2, [3]]));
 
 // test("range", 10, () => take(5, range(1000000)));
 // test("L.range", 10, () => take(5, L.range(1000000))); // 반복을 중간에 중단하는 경우 더 효율성이 뛰어나다.
+
+go([1, 2, 3], (iter) => new Promise((resolve) => resolve(iter)), console.log);
