@@ -66,6 +66,8 @@ const filter = curry(pipe(L.filter, takeAll));
 
 const map = curry(pipe(L.map, takeAll));
 
+const go1 = (v, f) => (v instanceof Promise ? v.then((v) => f(v)) : f(v));
+
 const reduce = curry((f, init, iter) => {
   let acc;
 
@@ -76,12 +78,16 @@ const reduce = curry((f, init, iter) => {
     acc = init;
   }
 
-  for (const el of iter) {
-    acc = acc instanceof Promise ? acc.then((acc) => f(acc, el)) : f(acc, el);
-    // acc = f(acc, el);
-  }
+  return go1(acc, function recur(acc) {
+    let cur;
 
-  return acc;
+    while (!(cur = iter.next()).done) {
+      acc = f(acc, cur.value);
+      if (acc instanceof Promise) return acc.then(recur);
+    }
+
+    return acc;
+  });
 });
 
 const flatten = pipe(L.flatten(), takeAll);
@@ -109,7 +115,7 @@ function test(name, time, f) {
   console.timeEnd(name);
 }
 
-console.log(...L.flatMap((a) => a ** 2, [1, 2, [3]]));
+// console.log(...L.flatMap((a) => a ** 2, [1, 2, [3]]));
 
 // test("range", 10, () => reduce((a, b) => a + b), range(1000000));
 // test("L.range", 10, () => reduce((a, b) => a + b), L.range(1000000)); // L.range가 좀 더 빠르다.
@@ -117,4 +123,18 @@ console.log(...L.flatMap((a) => a ** 2, [1, 2, [3]]));
 // test("range", 10, () => take(5, range(1000000)));
 // test("L.range", 10, () => take(5, L.range(1000000))); // 반복을 중간에 중단하는 경우 더 효율성이 뛰어나다.
 
-go([1, 2, 3], (iter) => new Promise((resolve) => resolve(iter)), console.log);
+go(
+  Promise.resolve([1, 2, 3]),
+  (iter) => new Promise((resolve) => resolve(iter)),
+  map((a) => a + 1),
+  console.log
+);
+
+go(
+  Promise.resolve(1),
+  (a) => a + 1,
+  (a) => Promise.resolve(a + 100),
+  console.log
+);
+
+go1(Promise.resolve(1), console.log);
