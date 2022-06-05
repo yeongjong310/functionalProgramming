@@ -77,7 +77,8 @@ const reduce = curry((f, init, iter) => {
   }
 
   for (const el of iter) {
-    acc = f(acc, el);
+    acc = acc instanceof Promise ? acc.then((acc) => f(acc, el)) : f(acc, el);
+    // acc = f(acc, el);
   }
 
   return acc;
